@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Environments
+venv/
+.venv/
+
+# Secrets
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Generated AI Files
+output/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
