@@ -13,6 +13,7 @@ class StoryService:
     def generate_story(self,topic:str,age:int):
         prompt = build_story_prompt(topic,age)
         response = self.llm.generate(prompt)
+        
         return response
         # print(prompt)
         # try:
