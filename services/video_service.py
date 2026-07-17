@@ -1,6 +1,7 @@
 import os
 from moviepy import ImageClip, AudioFileClip, concatenate_videoclips
-
+from moviepy.video.fx.FadeIn import FadeIn
+from moviepy.video.fx.FadeOut import FadeOut
 
 class VideoService:
     def __init__(self):
@@ -25,7 +26,17 @@ class VideoService:
             clip = (
                 ImageClip(image)
                 .with_duration(duration)
+                .resized(height=720)
+                .with_effects([
+                    FadeIn(0.5),
+                    FadeOut(0.5)
+                ])
             )
+            # Slow zoom from 100% to 110%
+            clip = clip.resized(
+                lambda t: 1 + 0.10 * (t / duration)
+            )
+
             clips.append(clip)
 
         final_video = concatenate_videoclips(

@@ -15,6 +15,7 @@ venv/
 
 # Generated AI Files
 output/
+assets/
 
 # Logs
 *.log
