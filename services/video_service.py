@@ -2,13 +2,13 @@ import os
 from moviepy import (
     ImageClip,
     AudioFileClip,
-    TextClip,
     CompositeVideoClip,
     concatenate_videoclips
 )
 
 from moviepy.video.fx.FadeIn import FadeIn
 from moviepy.video.fx.FadeOut import FadeOut
+from PIL import Image, ImageDraw, ImageFont
 
 
 class VideoService:
@@ -55,25 +55,18 @@ class VideoService:
 
         subtitle_clips = []
 
-        for sub in subtitles:
-
-            txt = (
-                TextClip(
-                    text=sub["text"],
-                    font_size=40,
-                    color="white",
-                    stroke_color="black",
-                    stroke_width=2,
-                    size=(1100, None),
-                    method="caption",
-                )
+        for i, sub in enumerate(subtitles):
+            img = self.create_subtitle_image(
+                sub["text"],
+                i
+            )
+            clip = (
+                ImageClip(img)
                 .with_start(sub["start"])
                 .with_duration(sub["end"] - sub["start"])
-                .with_position(("center", 620))
-            )
-
-            subtitle_clips.append(txt)
-
+                .with_position(("center", 580))
+             )
+            subtitle_clips.append(clip)
         final_video = CompositeVideoClip(
             [video] + subtitle_clips
         )
@@ -96,6 +89,53 @@ class VideoService:
 
         return output_path
 
+
+    def create_subtitle_image(self, text, index):
+        width = 1280
+        height = 120
+
+        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
+
+        try:
+            font = ImageFont.truetype(
+                "C:/Windows/Fonts/arial.ttf",
+                42
+            )
+        except:
+            font = ImageFont.load_default()
+
+        bbox = draw.textbbox((0, 0), text, font=font)
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        x = (width - text_width) // 2
+        y = (height - text_height) // 2
+
+        # Black outline
+        for dx in (-2, -1, 0, 1, 2):
+            for dy in (-2, -1, 0, 1, 2):
+                draw.text(
+                    (x + dx, y + dy),
+                    text,
+                    font=font,
+                    fill="black"
+                )
+
+        # White text
+        draw.text(
+            (x, y),
+            text,
+            font=font,
+            fill="white"
+        )
+
+        path = f"output/video/subtitle_{index}.png"
+
+        image.save(path)
+
+        return path
 
 # import os
 # from moviepy import ImageClip, AudioFileClip, concatenate_videoclips
